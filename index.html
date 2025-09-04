@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Clone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif;
+        }
+
+        body {
+            color: #222;
+            line-height: 1.6;
+            background-color: #f7f7f7;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            padding: 14px 5%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 22px;
+            color: #ff5a5f;
+        }
+
+        .logo i {
+            margin-right: 5px;
+        }
+
+        .search-bar {
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .search-bar div {
+            padding: 0 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .search-bar div:not(:last-child) {
+            border-right: 1px solid #ddd;
+        }
+
+        .search-bar div:hover {
+            background: #f7f7f7;
+            border-radius: 20px;
+        }
+
+        .search-icon {
+            background-color: #ff5a5f;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-menu div {
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .user-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7f7f7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            padding: 20px 5%;
+            overflow-x: auto;
+            gap: 20px;
+            border-bottom: 1px solid #ddd;
+            background: white;
+        }
+
+        .category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+            cursor: pointer;
+        }
+
+        .category i {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #717171;
+        }
+
+        .category.active i {
+            color: #ff5a5f;
+        }
+
+        .category span {
+            font-size: 12px;
+            color: #717171;
+        }
+
+        .category.active span {
+            color: #000;
+            font-weight: 500;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        /* Main Content */
+        .container {
+            padding: 20px 5%;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        /* Property Listings */
+        .property-listings {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .property-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .property-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .property-card:hover .property-image img {
+            transform: scale(1.05);
+        }
+
+        .property-like {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .property-details {
+            padding: 15px;
+        }
+
+        .property-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .property-distance, .property-dates {
+            font-size: 14px;
+            color: #717171;
+            margin-bottom: 5px;
+        }
+
+        .property-price {
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .property-price span {
+            font-weight: normal;
+        }
+
+        .property-rating {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .property-rating i {
+            color: #ff5a5f;
+            margin-right: 5px;
+        }
+
+        /* Filter Modal */
+        .filter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filter-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .filter-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-btn {
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        .apply-btn {
+            background: #ff5a5f;
+            color: white;
+            border: none;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #f7f7f7;
+            padding: 40px 5%;
+            margin-top: 50px;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            color: #717171;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-column a:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #717171;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .search-bar {
+                margin: 15px 0;
+                width: 100%;
+            }
+            
+            .property-listings {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-airbnb"></i>airbnb
+        </div>
+        
+        <div class="search-bar">
+            <div>Anywhere</div>
+            <div>Any week</div>
+            <div>Add guests</div>
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        
+        <div class="user-menu">
+            <div>Become a Host</div>
+            <div class="user-icon">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-user-circle" style="margin-left: 5px;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories -->
+    <div class="categories">
+        <div class="category active">
+            <i class="fas fa-igloo"></i>
+            <span>Cabins</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-umbrella-beach"></i>
+            <span>Beach</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-mountain"></i>
+            <span>Mountain</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-swimming-pool"></i>
+            <span>Amazing pools</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-house"></i>
+            <span>Tiny homes</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-tree"></i>
+            <span>Treehouses</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-ship"></i>
+            <span>Boats</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-campground"></i>
+            <span>Camping</span>
+        </div>
+        <div class="category">
+            <i class="fas fa-glass-cheers"></i>
+            <span>Luxury</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="section-title">Explore nearby cabins</h2>
+        
+        <!-- Property Listings -->
+        <div class="property-listings" id="propertyListings">
+            <!-- Property cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-header">
+                <h2 class="filter-title">Filters</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            
+            <div class="filter-options">
+                <div class="filter-group">
+                    <label for="price-range">Price range</label>
+                    <input type="range" id="price-range" min="0" max="1000" step="10">
+                    <div id="price-value">$0 - $1000+</div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="property-type">Property type</label>
+                    <select id="property-type">
+                        <option>Any type</option>
+                        <option>House</option>
+                        <option>Apartment</option>
+                        <option>Cabin</option>
+                        <option>Guesthouse</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="bedrooms">Bedrooms</label>
+                    <select id="bedrooms">
+                        <option>Any</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4+</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="beds">Beds</label>
+                    <select id="beds">
+                        <option>Any</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4+</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="bathrooms">Bathrooms</label>
+                    <select id="bathrooms">
+                        <option>Any</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4+</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="amenities">Amenities</label>
+                    <select id="amenities">
+                        <option>Any</option>
+                        <option>Wifi</option>
+                        <option>Kitchen</option>
+                        <option>Pool</option>
+                        <option>Hot tub</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn clear-btn">Clear all</button>
+                <button class="filter-btn apply-btn">Show places</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">AirCover</a></li>
+                    <li><a href="#">Safety information</a></li>
+                    <li><a href="#">Supporting people with disabilities</a></li>
+                    <li><a href="#">Cancellation options</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Community</h3>
+                <ul>
+                    <li><a href="#">Airbnb.org: disaster relief housing</a></li>
+                    <li><a href="#">Combating discrimination</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Hosting</h3>
+                <ul>
+                    <li><a href="#">Airbnb your home</a></li>
+                    <li><a href="#">AirCover for Hosts</a></li>
+                    <li><a href="#">Hosting resources</a></li>
+                    <li><a href="#">Community forum</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Airbnb</h3>
+                <ul>
+                    <li><a href="#">Newsroom</a></li>
+                    <li><a href="#">New features</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Investors</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2023 Airbnb Clone. This is a demo site for portfolio purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample property data
+        const properties = [
+            {
+                name: "Cozy Mountain Cabin",
+                image: "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "125 miles away",
+                dates: "Nov 12-17",
+                price: 189,
+                rating: 4.92,
+                reviews: 142,
+                liked: false
+            },
+            {
+                name: "Lakeside Retreat",
+                image: "https://images.unsplash.com/photo-1487730116645-74489c95b41b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "78 miles away",
+                dates: "Oct 29 - Nov 5",
+                price: 225,
+                rating: 4.87,
+                reviews: 89,
+                liked: false
+            },
+            {
+                name: "Forest Hideaway",
+                image: "https://images.unsplash.com/photo-1595877244574-e90ce41ce089?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "210 miles away",
+                dates: "Dec 1-8",
+                price: 156,
+                rating: 4.95,
+                reviews: 203,
+                liked: false
+            },
+            {
+                name: "Modern A-Frame Cabin",
+                image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "45 miles away",
+                dates: "Nov 5-12",
+                price: 275,
+                rating: 4.83,
+                reviews: 76,
+                liked: false
+            },
+            {
+                name: "Riverside Cabin",
+                image: "https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "95 miles away",
+                dates: "Nov 20-27",
+                price: 198,
+                rating: 4.89,
+                reviews: 112,
+                liked: false
+            },
+            {
+                name: "Mountain View Chalet",
+                image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "165 miles away",
+                dates: "Dec 10-15",
+                price: 312,
+                rating: 4.97,
+                reviews: 157,
+                liked: false
+            },
+            {
+                name: "Secluded Treehouse",
+                image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "52 miles away",
+                dates: "Nov 15-20",
+                price: 345,
+                rating: 4.99,
+                reviews: 231,
+                liked: false
+            },
+            {
+                name: "Rustic Log Cabin",
+                image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+                distance: "135 miles away",
+                dates: "Dec 5-12",
+                price: 175,
+                rating: 4.85,
+                reviews: 94,
+                liked: false
+            }
+        ];
+
+        // Function to generate property cards
+        function generatePropertyCards() {
+            const propertyListings = document.getElementById('propertyListings');
+            propertyListings.innerHTML = '';
+            
+            properties.forEach(property => {
+                const card = document.createElement('div');
+                card.className = 'property-card';
+                
+                card.innerHTML = `
+                    <div class="property-image">
+                        <img src="${property.image}" alt="${property.name}">
+                        <div class="property-like ${property.liked ? 'liked' : ''}">
+                            <i class="fas fa-heart ${property.liked ? 'fas' : 'far'}"></i>
+                        </div>
+                    </div>
+                    <div class="property-details">
+                        <h3 class="property-title">${property.name}</h3>
+                        <div class="property-distance">${property.distance}</div>
+                        <div class="property-dates">${property.dates}</div>
+                        <div class="property-price">$${property.price} <span>night</span></div>
+                        <div class="property-rating">
+                            <i class="fas fa-star"></i> ${property.rating} (${property.reviews})
+                        </div>
+                    </div>
+                `;
+                
+                propertyListings.appendChild(card);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            generatePropertyCards();
+            
+            // Get modal elements
+            const filterModal = document.getElementById('filterModal');
+            const closeBtn = document.querySelector('.close-btn');
+            const searchIcon = document.querySelector('.search-icon');
+            const categories = document.querySelectorAll('.category');
+            
+            // Open modal when clicking search icon
+            searchIcon.addEventListener('click', function() {
+                filterModal.style.display = 'flex';
+            });
+            
+            // Close modal when clicking close button
+            closeBtn.addEventListener('click', function() {
+                filterModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === filterModal) {
+                    filterModal.style.display = 'none';
+                }
+            });
+            
+            // Handle category selection
+            categories.forEach(category => {
+                category.addEventListener('click', function() {
+                    categories.forEach(cat => cat.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real app, you would filter properties by category
+                    const categoryName = this.querySelector('span').textContent;
+                    document.querySelector('.section-title').textContent = `Explore nearby ${categoryName.toLowerCase()}`;
+                });
+            });
+            
+            // Handle price range slider
+            const priceRange = document.getElementById('price-range');
+            const priceValue = document.getElementById('price-value');
+            
+            priceRange.addEventListener('input', function() {
+                priceValue.textContent = `$0 - $${this.value}+`;
+            });
+            
+            // Handle like button clicks
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.property-like')) {
+                    const likeBtn = e.target.closest('.property-like');
+                    const icon = likeBtn.querySelector('i');
+                    
+                    likeBtn.classList.toggle('liked');
+                    icon.classList.toggle('far');
+                    icon.classList.toggle('fas');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
